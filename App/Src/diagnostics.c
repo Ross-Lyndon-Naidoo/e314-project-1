@@ -11,6 +11,7 @@
 #include "telemetry.h"
 #include "ui.h"
 #include "usart.h"
+#include "utils.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -39,6 +40,8 @@ static void cmd_setpage(const char *payload);
 static void cmd_s(const char *payload);
 static void format_stat_msg(char *out_buffer, size_t out_size, const char *msg,
                             float value, const char *format);
+static void format_msg(char *out_buffer, size_t out_size, const char *msg,
+                       float value, size_t decimal_places, size_t total_width);
 
 //============== 2. The Command Table ==============
 static const UART_Command_t command_table[] = {
@@ -304,6 +307,37 @@ static void format_stat_msg(char *out_buffer, size_t out_size, const char *msg,
 
   const int value_width = 20 - message_length;
 
-  (void)snprintf(out_buffer, out_size, "%.*s%*s\n", message_length, msg,
-                 value_width, val_buffer);
+  (void)snprintf(out_buffer, out_size, "%.*s%*s%s\n", message_length, msg,
+                 value_width, "", val_buffer);
+}
+
+static void format_clock_msg(char *out_buffer, size_t out_size, const char *msg,
+                             const char *time_str) {
+  (void)snprintf(out_buffer, out_size, "%s: %s\n", msg, time_str);
+}
+
+/**
+ * @brief Takes in a left-aligned message and a float value, formats them into a
+ * single string with the specified number of decimal places and total width,
+ * and writes the result to the output buffer.
+ * @param out_buffer The output buffer to write the formatted message to.
+ * @param out_size The size of the output buffer.
+ * @param left_msg The left-aligned message.
+ * @param value The float value to format.
+ * @param format The format string for the float value.
+ * @param decimal_places The number of decimal places to display.
+ * @param total_width The total width of the formatted message.
+ */
+void format_metric(char *out_buffer, size_t max_len, const char *left,
+                   float number, const char *unit) {
+  char left_tmp[20];
+  char right_tmp[20];
+
+  strcpy(left_tmp, left);
+  snprintf(right_tmp, sizeof(right_tmp), "%.1f %s", number, unit);
+
+  int padding = 18 - strlen(left_tmp) - strlen(right_tmp);
+
+  // Use the explicit max_len parameter instead of sizeof(display)
+  snprintf(out_buffer, max_len, "%s%*s%s", left_tmp, padding, "", right_tmp);
 }

@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <math.h>
-
+#include <stdio.h>
+#include <string.h>
 SplitFloat_t utils_split_float(float value, uint8_t decimal_places) {
   SplitFloat_t result = {0};
 
