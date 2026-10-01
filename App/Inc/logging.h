@@ -10,19 +10,9 @@
 
 #include "system_types.h"
 
-
 void Logging_Process(void);
-void Logging_SetLogUpdateFlag(void);
-void Logging_ClearLogUpdateFlag(void);
-uint8_t Logging_IsLogUpdateFlagSet(void);
-
-void Logging_EnableLogging(void);
-void Logging_DisableLogging(void);
-uint8_t Logging_IsLoggingEnabled(void);
-
-uint8_t Logging_SDCardStatus(void);
-uint8_t Logging_MPU6050Status(void);
-uint8_t Logging_GPSStatus(void);
-
+void Logging_SetLoggingUpdate(void);
+void Logging_ClearLoggingUpdate(void);
+uint8_t Logging_IsLoggingUpdate(void);
 
 #endif /* INC_LOGGING_H_ */

@@ -27,34 +27,27 @@ void Analytics_Init(void);
  */
 void Analytics_Process(void);
 
-//============= Getters and Setters ==============
-
-
 /**
- * @brief Set the editing state to true
- *
+ * @brief Get the current analytics data.
+ * @return The current analytics data.
  */
-void Analytics_SetEditing(void);
-
-/**
- * @brief Clear the editing state
- *
- */
-void Analytics_ClearEditing(void);
-/**
- * @brief Check if the editing state is true
- * @return 1 if the editing state is true, 0 otherwise.
- */
-uint8_t Analytics_IsEditing(void);
-
-warning_flags_t Analytics_GetWarningFlags(void);
-void Analytics_SetWarningFlags(warning_flags_t flags);
-void Analytics_ClearWarningFlags(void);
-
-fuel_efficiency_t Analytics_GetFuelEfficiency(void);
-void Analytics_SetFuelEfficiency(fuel_efficiency_t efficiency);
-void Analytics_CalculateFuelEfficiency(void);
-
 AnalyticsData_t Analytics_GetAnalyticsData(void);
+
+/**
+ * @brief Get the current warning flags.
+ * @return The current warning flags.
+ */
+warning_flags_t Analytics_GetWarnings(void);
+/**
+ * @brief Set the warning flags.
+ * @param flags The warning flags to set.
+ */
+void Analytics_SetWarnings(warning_flags_t flags);
+
+/**
+ * @brief Set the fuel efficiency.
+ * @param efficiency The fuel efficiency to set.
+ */
+void Analytics_SetFuelEfficiency(fuel_efficiency_t efficiency);
 
 #endif /* INC_ANALYTICS_H_ */

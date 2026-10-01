@@ -26,7 +26,6 @@ static volatile uint8_t tx_busy = 0;
 static char rx_buffer[128];
 static char process_buffer[128];
 static volatile uint8_t rx_data_ready = 0;
-static volatile uint16_t rx_data_length = 0;
 
 extern UART_HandleTypeDef huart2;
 
@@ -38,7 +37,8 @@ static void cmd_sfd(const char *payload);
 static void cmd_setrtc(const char *payload);
 static void cmd_setpage(const char *payload);
 static void cmd_s(const char *payload);
-static char *format_stat_msg(const char *msg, float value, const char *format);
+static const char *format_stat_msg(const char *msg, float value,
+                                   const char *format);
 
 //============== 2. The Command Table ==============
 static const UART_Command_t command_table[] = {
@@ -130,29 +130,30 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 static void cmd_stat(const char *payload) {
-  System_Context_t *sys = System_GetContext();
-  if (!sys) {
-    if (System_IsDebugging())
-      Diagnostics_TransmitData("Error: System context not available\n");
-    return;
-  }
+  (void)payload;
 
-  timestamp_t *time = System_GetCurrentTime();
+  const System_Context_t *system = System_GetContext();
+  const timestamp_t time = System_GetCurrentTime();
   char response[256];
 
-  // Fix 1: The format string is now a single, continuous string.
-  // Fix 2: "cm" is moved inside the format specifier string.
-  snprintf(response, sizeof(response),
-           "@20%02d/%02d/%02d %02d:%02d:%02d \n%s\n", time->date.Year,
-           time->date.Month, time->date.Date, time->time.Hours,
-           time->time.Minutes, time->time.Seconds,
-           format_stat_msg("Distance:", sys->telemetry.distance, "%03.1f cm"));
+  snprintf(
+      response, sizeof(response), "@20%02d/%02d/%02d %02d:%02d:%02d \n%s\n",
+      time.date.Year, time.date.Month, time.date.Date, time.time.Hours,
+      time.time.Minutes, time.time.Seconds,
+      format_stat_msg("Distance:", system->telemetry.distance, "%03.1f cm"));
 
   Diagnostics_TransmitData(response);
 }
 static void cmd_log(const char *payload) {
+  (void)payload;
+
   char response[64];
-  snprintf(response, sizeof(response), "Toggled logging\n");
+
+  const uint8_t enabled = !System_IsLoggingEnabled();
+  System_SetLoggingEnabled(enabled);
+
+  snprintf(response, sizeof(response), "Logging %s\n",
+           enabled ? "enabled" : "disabled");
   Diagnostics_TransmitData(response);
 }
 
@@ -244,6 +245,7 @@ static void cmd_s(const char *payload) {
       break;
     case 5:
       target_event = UI_EVENT_NAV_NEXT;
+      break;
     default:
       Diagnostics_TransmitData("Error: Invalid button ID\n");
       return; // Exit early if the number doesn't map to a real event
@@ -264,7 +266,8 @@ static void cmd_s(const char *payload) {
 #include <stdio.h>
 #include <string.h>
 
-static char *format_stat_msg(const char *msg, float value, const char *format) {
+static const char *format_stat_msg(const char *msg, float value,
+                                   const char *format) {
   // 20 visible characters + 1 '\n' + 1 '\0' terminator = 22 bytes
   static char out_buffer[22];
   char val_buffer[16];

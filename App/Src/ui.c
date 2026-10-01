@@ -214,49 +214,48 @@ void draw_display_page_default(void) {
 }
 
 void draw_display_page_1(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
   display_time();
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
-                 "Dist:", sensor_data->distance, "cm");
+                 "Dist:", sensor_data.distance, "cm");
   display_metric(display_buffer[2], sizeof(display_buffer[2]),
-                 "Temp:", sensor_data->temperature, "C");
+                 "Temp:", sensor_data.temperature, "C");
   draw_display_buffer();
 }
 
 void draw_display_page_2(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
   display_time();
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
-                 "Accel:", sensor_data->acceleration.magnitude, "g");
+                 "Accel:", sensor_data.acceleration.magnitude, "g");
   display_metric(display_buffer[2], sizeof(display_buffer[2]),
-                 "Light:", sensor_data->light_level, "lux");
+                 "Light:", sensor_data.light_level, "lux");
   draw_display_buffer();
 }
 
 void draw_display_page_3(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
   display_time();
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
-                 "Lat:", sensor_data->location.latitude, "");
+                 "Lat:", sensor_data.location.latitude, "");
   display_metric(display_buffer[2], sizeof(display_buffer[2]),
-                 "Lon:", sensor_data->location.longitude, "");
+                 "Lon:", sensor_data.location.longitude, "");
 }
 
 void draw_display_page_4(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
   display_time();
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
-                 "Heading:", sensor_data->location.heading, "deg");
+                 "Heading:", sensor_data.location.heading, "deg");
   display_metric(display_buffer[2], sizeof(display_buffer[2]),
-                 "Speed:", sensor_data->location.speed, "km/h");
+                 "Speed:", sensor_data.location.speed, "km/h");
 }
 
 void draw_display_page_5(void) {
-
   AnalyticsData_t analytics = Analytics_GetAnalyticsData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
@@ -277,14 +276,14 @@ void draw_data_entry_page_default(void) {
 }
 
 void draw_data_entry_page_1(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
-  uint8_t editing = Analytics_IsEditing();
+  uint8_t editing = System_IsEditing();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "Enter fuel liters");
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
-                 "Current:", sensor_data->fuel_data.fuel_level, "L");
+                 "Current:", sensor_data.fuel_data.fuel_level, "L");
 
   (editing) ? display_string(display_buffer[2], sizeof(display_buffer[2]),
                              "Press S3 to change")
@@ -293,13 +292,13 @@ void draw_data_entry_page_1(void) {
 }
 
 void draw_data_entry_page_2(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
-  uint8_t editing = Analytics_IsEditing();
+  AnalyticsData_t analytics = Analytics_GetAnalyticsData();
+  uint8_t editing = System_IsEditing();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "Enter odometer km");
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
-                 "Current:", sensor_data->fuel_data.odometer, "km");
+                 "Current:", analytics.fuel_data.odometer, "km");
 
   (editing) ? display_string(display_buffer[2], sizeof(display_buffer[2]),
                              "Press S3 to change")
@@ -308,7 +307,7 @@ void draw_data_entry_page_2(void) {
 }
 
 void draw_data_entry_page_3(void) {
-  uint8_t logging_enabled = Logging_IsLoggingEnabled();
+  uint8_t logging_enabled = System_IsLoggingEnabled();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "Log data (Y/N)");
@@ -331,10 +330,11 @@ void draw_diagnostics_page_default(void) {
 }
 
 void draw_diagnostics_page_1(void) {
+  TelemetryStatus_t status = Telemetry_GetSensorStatus();
   display_time();
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "-- Diagnostics ---");
-  (Logging_SDCardStatus())
+  (status.sd_card_status)
       ? display_string(display_buffer[2], sizeof(display_buffer[2]),
                        "SD Card: OK")
       : display_string(display_buffer[2], sizeof(display_buffer[2]),
@@ -342,10 +342,12 @@ void draw_diagnostics_page_1(void) {
 }
 
 void draw_diagnostics_page_2(void) {
+  TelemetryStatus_t status = Telemetry_GetSensorStatus();
+
   display_time();
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "-- Diagnostics ---");
-  (Logging_MPU6050Status())
+  (status.mpu6050_status)
       ? display_string(display_buffer[2], sizeof(display_buffer[2]),
                        "MPU6050: OK")
       : display_string(display_buffer[2], sizeof(display_buffer[2]),
@@ -353,20 +355,23 @@ void draw_diagnostics_page_2(void) {
 }
 
 void draw_diagnostics_page_3(void) {
+  TelemetryStatus_t status = Telemetry_GetSensorStatus();
+
   display_time();
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "-- Diagnostics ---");
-  (Logging_GPSStatus())
+  (status.gps_status)
       ? display_string(display_buffer[2], sizeof(display_buffer[2]), "GPS: OK")
       : display_string(display_buffer[2], sizeof(display_buffer[2]),
                        "GPS: Not OK");
 }
 
 void draw_diagnostics_page_4(void) {
+  uint8_t logging_enabled = System_IsLoggingEnabled();
   display_time();
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "-- Diagnostics ---");
-  (Logging_IsLoggingEnabled())
+  (logging_enabled)
       ? display_string(display_buffer[2], sizeof(display_buffer[2]),
                        "Logging: Enabled")
       : display_string(display_buffer[2], sizeof(display_buffer[2]),
@@ -374,58 +379,58 @@ void draw_diagnostics_page_4(void) {
 }
 
 void draw_warning_unsafe_driving(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "--Unsafe Driving--");
   display_metric(display_buffer[2], sizeof(display_buffer[2]),
-                 "Accel:", sensor_data->acceleration.magnitude, "g");
+                 "Accel:", sensor_data.acceleration.magnitude, "g");
 }
 
 void draw_warning_impact_detected(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "-Impact Detected--");
   display_metric(display_buffer[2], sizeof(display_buffer[2]),
-                 "Accel:", sensor_data->acceleration.magnitude, "g");
+                 "Accel:", sensor_data.acceleration.magnitude, "g");
 }
 
 void draw_warning_low_light(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "----Low Light-----");
   display_metric(display_buffer[2], sizeof(display_buffer[2]),
-                 "Light:", sensor_data->light_level, "lux");
+                 "Light:", sensor_data.light_level, "lux");
 }
 
 void draw_warning_proximity(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "----Proximity-----");
   display_metric(display_buffer[2], sizeof(display_buffer[2]),
-                 "Dist:", sensor_data->distance, "cm");
+                 "Dist:", sensor_data.distance, "cm");
 }
 
 void draw_warning_high_temperature(void) {
-  TelemetryData_t *sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetSensorData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "-High Temperature-");
   display_metric(display_buffer[2], sizeof(display_buffer[2]),
-                 "Temp:", sensor_data->temperature, "C");
+                 "Temp:", sensor_data.temperature, "C");
 }
 
 //========== Helper functions ==========

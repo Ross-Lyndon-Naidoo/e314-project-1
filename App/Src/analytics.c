@@ -13,51 +13,55 @@
 #include <stdio.h>
 
 extern RTC_HandleTypeDef hrtc;
-static volatile uint8_t time_update_flag = 0;
-static volatile uint8_t editing_flag = 0;
 
 static volatile uint8_t fuel_efficiency_flag = 0;
-
 static volatile uint8_t warning_flag = 0;
 
-void calculate_fuel_efficiency(void);
-void update_time(void);
+static fuel_efficiency_t calculate_fuel_efficiency(float fuel_level,
+                                                   float odometer);
+static void update_fuel_efficiency(void);
 
 // ==========================================
 // Public Functions
 // ==========================================
 void Analytics_Init(void) {
   System_Context_t *sys = System_GetContext();
-  sys->analytics.fuel_data.fuel_level = 5.0f;
-  sys->analytics.fuel_data.odometer = 48.6f;
 
-  calculate_fuel_efficiency();
-  if (System_IsDebugging())
+  sys->analytics = (AnalyticsData_t){0};
+
+  sys->analytics.fuel_data = (fuel_data_t){
+      .fuel_level = 5.0f,
+      .odometer = 48.6f,
+  };
+
+  sys->analytics.fuel_efficiency = calculate_fuel_efficiency(
+      sys->analytics.fuel_data.fuel_level, sys->analytics.fuel_data.odometer);
+
+  if (System_IsDebugging()) {
     Diagnostics_TransmitBlocking("Analytics Initialized\n");
+  }
 }
 
 void Analytics_Process(void) {
   if (fuel_efficiency_flag) {
-    fuel_efficiency_flag = 0;
-    calculate_fuel_efficiency();
-  }
-
-  if (warning_flag) {
-    warning_flag = 0;
-    // Process warning flags
+    fuel_efficiency_flag = 0U;
+    update_fuel_efficiency();
   }
 }
 
 AnalyticsData_t Analytics_GetAnalyticsData(void) {
-  System_Context_t *sys = System_GetContext();
+  const System_Context_t *sys = System_GetContext();
   return sys->analytics;
 }
 
-// Fuel efficiency
-fuel_efficiency_t Analytics_GetFuelEfficiency(void) {
+warning_flags_t Analytics_GetWarnings(void) {
+  SystemStatus_t status = System_GetStatus();
+  return status.warnings;
+}
+
+void Analytics_SetWarnings(warning_flags_t flags) {
   System_Context_t *sys = System_GetContext();
-  const fuel_efficiency_t efficiency = sys->analytics.fuel_efficiency;
-  return efficiency;
+  sys->warnings = flags;
 }
 
 void Analytics_SetFuelEfficiency(fuel_efficiency_t efficiency) {
@@ -65,44 +69,28 @@ void Analytics_SetFuelEfficiency(fuel_efficiency_t efficiency) {
   sys->analytics.fuel_efficiency = efficiency;
 }
 
-// Editing state management
-void Analytics_SetEditing(void) {
-  System_Context_t *sys = System_GetContext();
-  sys->analytics.is_editing = 1;
-}
-void Analytics_ClearEditing(void) {
-  System_Context_t *sys = System_GetContext();
-  sys->analytics.is_editing = 0;
-}
-
-uint8_t Analytics_IsEditing(void) {
-  System_Context_t *sys = System_GetContext();
-  return sys->analytics.is_editing;
-}
-
-// Warning flags
-warning_flags_t Analytics_GetWarningFlags(void) {
-  System_Context_t *sys = System_GetContext();
-  return sys->warnings;
-}
-
 // ==========================================
 // PRIVATE HELPER FUNCTIONS
 // ==========================================
-void calculate_fuel_efficiency(void) {
+static fuel_efficiency_t calculate_fuel_efficiency(float fuel_level,
+                                                   float odometer) {
+  fuel_efficiency_t efficiency;
+
+  if (fuel_level > 0.0f && odometer > 0.0f) {
+    efficiency.km_per_liter = odometer / fuel_level;
+    efficiency.liters_per_100km = (fuel_level / odometer) * 100.0f;
+  } else {
+    efficiency.km_per_liter = 0.0f;
+    efficiency.liters_per_100km = 0.0f;
+  }
+  return efficiency;
+}
+
+static void update_fuel_efficiency(void) {
+  const TelemetryData_t telemetry = Telemetry_GetSensorData();
   System_Context_t *sys = System_GetContext();
 
-  if (sys->telemetry.fuel_data.fuel_level > 0.0f &&
-      sys->telemetry.fuel_data.odometer > 0.0f) {
-    sys->analytics.fuel_efficiency.km_per_liter =
-        sys->telemetry.fuel_data.odometer / sys->telemetry.fuel_data.fuel_level;
-
-    sys->analytics.fuel_efficiency.liters_per_100km =
-        (sys->telemetry.fuel_data.fuel_level /
-         sys->telemetry.fuel_data.odometer) *
-        100.0f;
-  } else {
-    sys->analytics.fuel_efficiency.km_per_liter = 0.0f;
-    sys->analytics.fuel_efficiency.liters_per_100km = 0.0f;
-  }
+  sys->analytics.fuel_data = telemetry.fuel_data;
+  sys->analytics.fuel_efficiency = calculate_fuel_efficiency(
+      telemetry.fuel_data.fuel_level, telemetry.fuel_data.odometer);
 }
