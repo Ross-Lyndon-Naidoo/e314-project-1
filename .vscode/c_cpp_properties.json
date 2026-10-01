@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/Core/Inc/**",
+                "${workspaceFolder}/Drivers/CMSIS/Include",
+                "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32H5xx/Include",
+                "${workspaceFolder}/Drivers/BSP/STM32H5xx_Nucleo",
+                "${workspaceFolder}/Drivers/STM32H5xx_HAL_Driver/Inc",
+                "${workspaceFolder}/Drivers/ssd1306/"
+            ],
+            "defines": [
+                "USE_HAL_DRIVER",
+                "STM32H533xx"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "macos-gcc-arm64",
+            "compilerPath": "/Applications/ArmGNUToolchain/15.3.rel1/arm-none-eabi/bin/arm-none-eabi-gcc",
+            "compileCommands": "${workspaceFolder}/build/Debug/compile_commands.json"
+        }
+    ],
+    "version": 4
+}
