@@ -59,6 +59,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/BUTTON/button.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/NEO_6M/gps.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/NEO_6M/gps.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/LMT01/lmt01.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/LMT01/lmt01.h
 
 
 
