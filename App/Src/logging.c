@@ -53,5 +53,5 @@ void log_system_data(void) {
            timestamp.time.Minutes, timestamp.time.Seconds,
            telemetry.light_level, telemetry.temperature);
 
-  Diagnostics_TransmitData(buffer);
+  Diagnostics_TransmitBlocking(buffer);
 }

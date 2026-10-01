@@ -37,8 +37,8 @@ static void cmd_sfd(const char *payload);
 static void cmd_setrtc(const char *payload);
 static void cmd_setpage(const char *payload);
 static void cmd_s(const char *payload);
-static const char *format_stat_msg(const char *msg, float value,
-                                   const char *format);
+static void format_stat_msg(char *out_buffer, size_t out_size, const char *msg,
+                            float value, const char *format);
 
 //============== 2. The Command Table ==============
 static const UART_Command_t command_table[] = {
@@ -55,7 +55,7 @@ static const UART_Command_t command_table[] = {
 
 //============== Public Functions ==============
 void Diagnostics_Init(void) {
-  HAL_UARTEx_ReceiveToIdle_IT(&huart2, rx_buffer, sizeof(rx_buffer));
+  HAL_UARTEx_ReceiveToIdle_IT(&huart2, (uint8_t *)rx_buffer, sizeof(rx_buffer));
 
   if (System_IsDebugging())
     Diagnostics_TransmitBlocking("Diagnostics Initialized\n");
@@ -119,7 +119,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
     rx_data_ready = 1;
 
     // 3. RE-ARM IMMEDIATELY! The hardware starts listening again instantly.
-    HAL_UARTEx_ReceiveToIdle_IT(&huart2, rx_buffer, sizeof(rx_buffer));
+    HAL_UARTEx_ReceiveToIdle_IT(&huart2, (uint8_t *)rx_buffer,
+                                sizeof(rx_buffer));
   }
 }
 
@@ -132,15 +133,39 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 static void cmd_stat(const char *payload) {
   (void)payload;
 
-  const System_Context_t *system = System_GetContext();
+  const TelemetryData_t telemetry = Telemetry_GetSensorData();
   const timestamp_t time = System_GetCurrentTime();
-  char response[256];
 
-  snprintf(
-      response, sizeof(response), "@20%02d/%02d/%02d %02d:%02d:%02d \n%s\n",
-      time.date.Year, time.date.Month, time.date.Date, time.time.Hours,
-      time.time.Minutes, time.time.Seconds,
-      format_stat_msg("Distance:", system->telemetry.distance, "%03.1f cm"));
+  char response[256];
+  size_t used = 0U;
+
+  used += (size_t)snprintf(response + used, sizeof(response) - used,
+                           "@20%02u/%02u/%02u %02u:%02u:%02u\n", time.date.Year,
+                           time.date.Month, time.date.Date, time.time.Hours,
+                           time.time.Minutes, time.time.Seconds);
+
+  format_stat_msg(response + used, sizeof(response) - used,
+                  "Distance:", telemetry.distance, "%03.1f cm");
+  used = strlen(response);
+
+  format_stat_msg(response + used, sizeof(response) - used,
+                  "Temperature:", telemetry.temperature, "%03.1f C");
+  used = strlen(response);
+
+  format_stat_msg(response + used, sizeof(response) - used,
+                  "Light:", (float)telemetry.light_level, "%04.0f lux");
+  used = strlen(response);
+
+  format_stat_msg(response + used, sizeof(response) - used,
+                  "X accel:", telemetry.acceleration.x, "%03.1f g");
+  used = strlen(response);
+
+  format_stat_msg(response + used, sizeof(response) - used,
+                  "Y accel:", telemetry.acceleration.y, "%03.1f g");
+  used = strlen(response);
+
+  format_stat_msg(response + used, sizeof(response) - used,
+                  "Z accel:", telemetry.acceleration.z, "%03.1f g");
 
   Diagnostics_TransmitData(response);
 }
@@ -263,39 +288,22 @@ static void cmd_s(const char *payload) {
   }
 }
 
-#include <stdio.h>
-#include <string.h>
-
-static const char *format_stat_msg(const char *msg, float value,
-                                   const char *format) {
-  // 20 visible characters + 1 '\n' + 1 '\0' terminator = 22 bytes
-  static char out_buffer[22];
+static void format_stat_msg(char *out_buffer, size_t out_size, const char *msg,
+                            float value, const char *format) {
   char val_buffer[16];
 
-  // 1. Format the value first to know its exact string length
-  snprintf(val_buffer, sizeof(val_buffer), format, value);
-  int val_len = strlen(val_buffer);
+  (void)snprintf(val_buffer, sizeof(val_buffer), format, value);
 
-  // 2. Calculate the maximum space left for the message
-  int max_msg_len = 20 - val_len;
-  if (max_msg_len < 0)
-    max_msg_len = 0;
+  const size_t value_length = strlen(val_buffer);
+  const size_t message_width = value_length < 20U ? 20U - value_length : 0U;
 
-  // 3. Truncate the message if it's too long to prevent throwing off the
-  // 21-char limit
-  int msg_len = strlen(msg);
-  if (msg_len > max_msg_len) {
-    msg_len = max_msg_len;
+  int message_length = (int)strlen(msg);
+  if ((size_t)message_length > message_width) {
+    message_length = (int)message_width;
   }
 
-  // 4. The value takes up all remaining space (this forces right-alignment)
-  int val_width = 20 - msg_len;
+  const int value_width = 20 - message_length;
 
-  // 5. Construct the final string
-  // %.*s prints the left-aligned message
-  // %*s  prints the value right-aligned within the val_width space
-  snprintf(out_buffer, sizeof(out_buffer), "%.*s%*s\n", msg_len, msg, val_width,
-           val_buffer);
-
-  return out_buffer;
+  (void)snprintf(out_buffer, out_size, "%.*s%*s\n", message_length, msg,
+                 value_width, val_buffer);
 }
