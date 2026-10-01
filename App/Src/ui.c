@@ -13,8 +13,8 @@
 #include "rtc.h"
 #include "ssd1306.h"
 #include "ssd1306_fonts.h"
-#include "telemetry.h"
 #include "system.h"
+#include "telemetry.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -120,7 +120,8 @@ void UI_Init(void) {
   sm.force_redraw = 1;
   sm.is_initialized = 1;
 
-  if(System_IsDebugging()) Diagnostics_TransmitBlocking("UI Initialized\n");
+  if (System_IsDebugging())
+    Diagnostics_TransmitBlocking("UI Initialized\n");
 
   LED_Init();
 }

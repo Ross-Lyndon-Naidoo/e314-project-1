@@ -6,9 +6,9 @@
  */
 
 #include "analytics.h"
+#include "diagnostics.h"
 #include "system.h"
 #include "telemetry.h"
-#include "diagnostics.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -32,8 +32,8 @@ void Analytics_Init(void) {
   sys->analytics.fuel_data.odometer = 48.6f;
 
   calculate_fuel_efficiency();
-  if(System_IsDebugging()) Diagnostics_TransmitBlocking("Analytics Initialized\n");
-
+  if (System_IsDebugging())
+    Diagnostics_TransmitBlocking("Analytics Initialized\n");
 }
 
 void Analytics_Process(void) {
@@ -52,7 +52,6 @@ AnalyticsData_t Analytics_GetAnalyticsData(void) {
   System_Context_t *sys = System_GetContext();
   return sys->analytics;
 }
-
 
 // Fuel efficiency
 fuel_efficiency_t Analytics_GetFuelEfficiency(void) {

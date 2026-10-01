@@ -6,9 +6,9 @@
  */
 
 #include "system.h"
+#include "diagnostics.h"
 #include "tim.h"
 #include "usart.h"
-#include "diagnostics.h"
 #include <stdio.h>
 #include <string.h>
 // The single global instance of your entire application state
@@ -31,14 +31,15 @@ void System_Context_Init(void) {
   master_system.flags.debugging = 1;
   master_system.flags.logging = 1;
 
-  if(System_IsDebugging()) Diagnostics_TransmitBlocking("System Initialized\n");
+  if (System_IsDebugging())
+    Diagnostics_TransmitBlocking("System Initialized\n");
   // Sub-module initializations can populate their respective structs here
 }
 
 // Global accessor so modules can grab context safely
 System_Context_t *System_GetContext(void) { return &master_system; }
 
-timestamp_t* System_GetCurrentTime(void) {
+timestamp_t *System_GetCurrentTime(void) {
   master_system.time.current_time = get_current_time();
 
   return &master_system.time.current_time;
@@ -56,10 +57,7 @@ void System_ToggleDebugging(void) {
   master_system.flags.debugging = !master_system.flags.debugging;
 }
 
-
-SystemTime_t System_GetTime(void) {
-    return master_system.time;
-    }
+SystemTime_t System_GetTime(void) { return master_system.time; }
 
 void System_StartTimeStatistics(void) {
   master_system.time.uptime_ms = HAL_GetTick();
@@ -80,9 +78,8 @@ void System_UpdateTimeStatistics(void) {
     master_system.time.min_loop_time = elapsed_time;
   }
   master_system.time.average_loop_time =
-      0.99f * (float)master_system.time.average_loop_time + 0.01f * (float)elapsed_time;
-
-  
+      0.99f * (float)master_system.time.average_loop_time +
+      0.01f * (float)elapsed_time;
 }
 
 timestamp_t get_current_time(void) {

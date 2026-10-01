@@ -38,7 +38,7 @@ static void cmd_sfd(const char *payload);
 static void cmd_setrtc(const char *payload);
 static void cmd_setpage(const char *payload);
 static void cmd_s(const char *payload);
-static char* format_stat_msg(const char *msg, float value, const char *format);
+static char *format_stat_msg(const char *msg, float value, const char *format);
 
 //============== 2. The Command Table ==============
 static const UART_Command_t command_table[] = {
@@ -143,11 +143,10 @@ static void cmd_stat(const char *payload) {
   // Fix 1: The format string is now a single, continuous string.
   // Fix 2: "cm" is moved inside the format specifier string.
   snprintf(response, sizeof(response),
-           "@20%02d/%02d/%02d %02d:%02d:%02d \n%s\n",
-           time->date.Year, time->date.Month, time->date.Date, 
-           time->time.Hours, time->time.Minutes, time->time.Seconds,
-           format_stat_msg("Distance:", sys->telemetry.distance, "%03.1f cm")
-          );
+           "@20%02d/%02d/%02d %02d:%02d:%02d \n%s\n", time->date.Year,
+           time->date.Month, time->date.Date, time->time.Hours,
+           time->time.Minutes, time->time.Seconds,
+           format_stat_msg("Distance:", sys->telemetry.distance, "%03.1f cm"));
 
   Diagnostics_TransmitData(response);
 }
@@ -264,37 +263,36 @@ static void cmd_s(const char *payload) {
 
 #include <stdio.h>
 #include <string.h>
-#include <stdio.h>
-#include <string.h>
 
-static char* format_stat_msg(const char *msg, float value, const char *format) {
-    // 20 visible characters + 1 '\n' + 1 '\0' terminator = 22 bytes
-    static char out_buffer[22]; 
-    char val_buffer[16];
+static char *format_stat_msg(const char *msg, float value, const char *format) {
+  // 20 visible characters + 1 '\n' + 1 '\0' terminator = 22 bytes
+  static char out_buffer[22];
+  char val_buffer[16];
 
-    // 1. Format the value first to know its exact string length
-    snprintf(val_buffer, sizeof(val_buffer), format, value);
-    int val_len = strlen(val_buffer);
+  // 1. Format the value first to know its exact string length
+  snprintf(val_buffer, sizeof(val_buffer), format, value);
+  int val_len = strlen(val_buffer);
 
-    // 2. Calculate the maximum space left for the message
-    int max_msg_len = 20 - val_len;
-    if (max_msg_len < 0) max_msg_len = 0;
+  // 2. Calculate the maximum space left for the message
+  int max_msg_len = 20 - val_len;
+  if (max_msg_len < 0)
+    max_msg_len = 0;
 
-    // 3. Truncate the message if it's too long to prevent throwing off the 21-char limit
-    int msg_len = strlen(msg);
-    if (msg_len > max_msg_len) {
-        msg_len = max_msg_len; 
-    }
+  // 3. Truncate the message if it's too long to prevent throwing off the
+  // 21-char limit
+  int msg_len = strlen(msg);
+  if (msg_len > max_msg_len) {
+    msg_len = max_msg_len;
+  }
 
-    // 4. The value takes up all remaining space (this forces right-alignment)
-    int val_width = 20 - msg_len;
+  // 4. The value takes up all remaining space (this forces right-alignment)
+  int val_width = 20 - msg_len;
 
-    // 5. Construct the final string
-    // %.*s prints the left-aligned message
-    // %*s  prints the value right-aligned within the val_width space
-    snprintf(out_buffer, sizeof(out_buffer), "%.*s%*s\n", 
-             msg_len, msg, 
-             val_width, val_buffer);
+  // 5. Construct the final string
+  // %.*s prints the left-aligned message
+  // %*s  prints the value right-aligned within the val_width space
+  snprintf(out_buffer, sizeof(out_buffer), "%.*s%*s\n", msg_len, msg, val_width,
+           val_buffer);
 
-    return out_buffer;
+  return out_buffer;
 }

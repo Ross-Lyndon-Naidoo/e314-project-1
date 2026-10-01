@@ -34,7 +34,7 @@ void Telemetry_Init(void) {
 
 void Telemetry_Process(void) {}
 
-TelemetryData_t* Telemetry_GetSensorData(void) {
+TelemetryData_t *Telemetry_GetSensorData(void) {
   System_Context_t *sys = System_GetContext();
 
   return &(sys->telemetry);
