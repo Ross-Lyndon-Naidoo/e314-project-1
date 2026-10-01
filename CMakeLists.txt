@@ -83,6 +83,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MPU6050/mpu6050.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MPU6050/mpu6050.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/App/Inc/utils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/utils.c
+
 
 )
 
