@@ -1,25 +1,5 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Flash",
-            "detail": "Flash the ST Link",
-            "type": "shell",
-            "command": "echo '\\033[1;36mBuilding...\\033[0m' && /opt/ST/STM32CubeCLT_1.22.0/STM32CubeProgrammer/bin/STM32_Programmer_CLI -c port=SWD -w build/Debug/code.elf -v -rst && echo '\\033[1;32m⚡ SUCCESS: ST Link Flashed Successfully!\\033[0m'",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared",
-                "group": "Flash",
-                "showReuseMessage": false,
-                "clear": true,
-                "focus": true
-            },
-            "problemMatcher": [],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
-        }
-    ]
+    
 }
