@@ -87,6 +87,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Inc/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/utils.c
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/application.c
+    App/Inc/uart_transport.h
+    App/Src/uart_transport.c
 
 
 )
