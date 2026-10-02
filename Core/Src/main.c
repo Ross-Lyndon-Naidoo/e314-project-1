@@ -134,6 +134,7 @@ int main(void) {
   MX_USART2_UART_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
+  // TODO: Move any initialization code to application.c
   System_Init();
   Telemetry_Init();
   UI_Init();
@@ -148,6 +149,7 @@ int main(void) {
     // ==========================================
     // STEP 1: Process UI Inputs (Buttons & Keypad)
     // ==========================================
+    // TODO: Move any input processing code to application.c
     System_LoopBegin();
     UI_Button_Process();
     UI_Keypad_Process();

@@ -7,6 +7,7 @@
 
 #include "system.h"
 #include "diagnostics.h"
+#include "rtc.h"
 #include "tim.h"
 #include "usart.h"
 #include <stdio.h>

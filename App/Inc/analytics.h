@@ -7,13 +7,13 @@
 
 #ifndef INC_ANALYTICS_H_
 #define INC_ANALYTICS_H_
-#include "rtc.h"
+
 #include "system_types.h"
+#include <stdint.h>
 //============== Public Types ==============
 typedef struct {
   fuel_efficiency_t fuel_efficiency;
   fuel_data_t fuel_data;
-  uint8_t is_editing;
 } AnalyticsData_t;
 
 //============== Public Function Prototypes ==============
@@ -31,7 +31,7 @@ void Analytics_Process(void);
  * @brief Get the current analytics data.
  * @return The current analytics data.
  */
-AnalyticsData_t Analytics_GetAnalyticsData(void);
+AnalyticsData_t Analytics_GetData(void);
 
 /**
  * @brief Get the current warning flags.

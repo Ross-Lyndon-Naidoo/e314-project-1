@@ -18,6 +18,8 @@ static volatile uint8_t log_update_flag = 0;
 
 static void log_system_data(void);
 
+// TODO: Implement Logging_Init
+
 void Logging_Process(void) {
   if (!Logging_IsLoggingUpdate()) {
     return;
@@ -40,7 +42,7 @@ uint8_t Logging_IsLoggingUpdate(void) { return log_update_flag; }
 
 static void log_system_data(void) {
   const timestamp_t timestamp = System_GetCurrentTime();
-  const TelemetryData_t telemetry = Telemetry_GetSensorData();
+  const TelemetryData_t telemetry = Telemetry_GetData();
 
   char buffer[128];
   const int written = snprintf(

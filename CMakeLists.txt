@@ -80,11 +80,13 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Inc/system_types.h
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Inc/telemetry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Inc/ui.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/App/Inc/application.h
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MPU6050/mpu6050.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MPU6050/mpu6050.h
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Inc/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/utils.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/application.c
 
 
 )

@@ -214,7 +214,7 @@ void draw_display_page_default(void) {
 }
 
 void draw_display_page_1(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   display_time();
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
@@ -225,7 +225,7 @@ void draw_display_page_1(void) {
 }
 
 void draw_display_page_2(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   display_time();
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
@@ -236,7 +236,7 @@ void draw_display_page_2(void) {
 }
 
 void draw_display_page_3(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   display_time();
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
@@ -246,7 +246,7 @@ void draw_display_page_3(void) {
 }
 
 void draw_display_page_4(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   display_time();
   display_metric(display_buffer[1], sizeof(display_buffer[1]),
@@ -256,7 +256,7 @@ void draw_display_page_4(void) {
 }
 
 void draw_display_page_5(void) {
-  AnalyticsData_t analytics = Analytics_GetAnalyticsData();
+  AnalyticsData_t analytics = Analytics_GetData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "Fuel Efficiency:");
@@ -276,7 +276,7 @@ void draw_data_entry_page_default(void) {
 }
 
 void draw_data_entry_page_1(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   uint8_t editing = System_IsEditing();
 
@@ -292,7 +292,7 @@ void draw_data_entry_page_1(void) {
 }
 
 void draw_data_entry_page_2(void) {
-  AnalyticsData_t analytics = Analytics_GetAnalyticsData();
+  AnalyticsData_t analytics = Analytics_GetData();
   uint8_t editing = System_IsEditing();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
@@ -330,7 +330,7 @@ void draw_diagnostics_page_default(void) {
 }
 
 void draw_diagnostics_page_1(void) {
-  TelemetryStatus_t status = Telemetry_GetSensorStatus();
+  TelemetryStatus_t status = Telemetry_GetStatus();
   display_time();
   display_string(display_buffer[1], sizeof(display_buffer[1]),
                  "-- Diagnostics ---");
@@ -342,7 +342,7 @@ void draw_diagnostics_page_1(void) {
 }
 
 void draw_diagnostics_page_2(void) {
-  TelemetryStatus_t status = Telemetry_GetSensorStatus();
+  TelemetryStatus_t status = Telemetry_GetStatus();
 
   display_time();
   display_string(display_buffer[1], sizeof(display_buffer[1]),
@@ -355,7 +355,7 @@ void draw_diagnostics_page_2(void) {
 }
 
 void draw_diagnostics_page_3(void) {
-  TelemetryStatus_t status = Telemetry_GetSensorStatus();
+  TelemetryStatus_t status = Telemetry_GetStatus();
 
   display_time();
   display_string(display_buffer[1], sizeof(display_buffer[1]),
@@ -379,7 +379,7 @@ void draw_diagnostics_page_4(void) {
 }
 
 void draw_warning_unsafe_driving(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");
@@ -390,7 +390,7 @@ void draw_warning_unsafe_driving(void) {
 }
 
 void draw_warning_impact_detected(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");
@@ -401,7 +401,7 @@ void draw_warning_impact_detected(void) {
 }
 
 void draw_warning_low_light(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");
@@ -412,7 +412,7 @@ void draw_warning_low_light(void) {
 }
 
 void draw_warning_proximity(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");
@@ -423,7 +423,7 @@ void draw_warning_proximity(void) {
 }
 
 void draw_warning_high_temperature(void) {
-  TelemetryData_t sensor_data = Telemetry_GetSensorData();
+  TelemetryData_t sensor_data = Telemetry_GetData();
 
   display_string(display_buffer[0], sizeof(display_buffer[0]),
                  "===== WARNING ====");

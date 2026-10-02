@@ -1,8 +1,9 @@
-/*
- * telemetry.h
- *
- *  Created on: 29 Sept 2026
- *      Author: Rosso
+/**
+ *  @file telemetry.h
+ *  @brief Telemetry data structure and function prototypes.
+ *  @details This file contains the telemetry service
+ *  @author Rosso
+ *  @date 29 Sept 2026
  */
 
 #ifndef INC_TELEMETRY_H_
@@ -41,7 +42,7 @@ void Telemetry_Process(void);
  * @brief Get the current sensor data.
  * @return A TelemetryData_t structure containing the current sensor data.
  */
-TelemetryData_t Telemetry_GetSensorData(void);
+TelemetryData_t Telemetry_GetData(void);
 
-TelemetryStatus_t Telemetry_GetSensorStatus(void);
+TelemetryStatus_t Telemetry_GetStatus(void);
 #endif /* INC_TELEMETRY_H_ */

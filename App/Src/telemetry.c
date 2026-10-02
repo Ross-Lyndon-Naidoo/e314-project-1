@@ -6,42 +6,51 @@
  */
 
 #include "telemetry.h"
-#include "system.h"
 
-static volatile uint8_t temperature_update_flag = 0;
+static TelemetryData_t telemetry_data;
+static TelemetryStatus_t telemetry_status;
 
-void Telemetry_Init(void) {
-  System_Context_t *sys = System_GetContext();
+void Telemetry_Init(void)
+{
+  telemetry_data = (TelemetryData_t){
+      .distance = 12.5f,
+      .temperature = 25.6f,
+      .light_level = 1253U,
+      .acceleration = {
+          .x = 0.0f,
+          .y = 0.0f,
+          .z = 0.0f,
+          .magnitude = 0.3f,
+      },
+      .location = {
+          .latitude = -34.8325,
+          .longitude = 20.023056,
+          .heading = 45U,
+          .speed = 40.0f,
+      },
+      .fuel_data = {
+          .fuel_level = 5.0f,
+          .odometer = 48.6f,
+      },
+  };
 
-  fuel_data_t fuel = {.fuel_level = 5.0f, .odometer = 48.6f};
-  acceleration_data_t accel = {
-      .x = 0.0f, .y = 0.0f, .z = 0.0f, .magnitude = 0.3f};
-  location_t loc = {.latitude = -34.8325,
-                    .longitude = 20.023056,
-                    .heading = 45,
-                    .speed = 40.0f};
-
-  // Populate the master system context directly
-  sys->telemetry.distance = 12.5f;
-  sys->telemetry.temperature = 25.6f;
-  sys->telemetry.light_level = 1253;
-  sys->telemetry.acceleration = accel;
-  sys->telemetry.location = loc;
-  sys->telemetry.fuel_data = fuel;
-
-  temperature_update_flag = 0;
+  telemetry_status = (TelemetryStatus_t){
+      .sd_card_status = 1U,
+      .mpu6050_status = 1U,
+      .gps_status = 1U,
+  };
 }
 
-void Telemetry_Process(void) {}
-
-TelemetryData_t Telemetry_GetSensorData(void) {
-  System_Context_t *sys = System_GetContext();
-  TelemetryData_t data = sys->telemetry;
-  return data;
+void Telemetry_Process(void)
+{
 }
 
-TelemetryStatus_t Telemetry_GetSensorStatus(void) {
-  System_Context_t *sys = System_GetContext();
+TelemetryData_t Telemetry_GetData(void)
+{
+  return telemetry_data;
+}
 
-  return sys->sensor_status;
+TelemetryStatus_t Telemetry_GetStatus(void)
+{
+  return telemetry_status;
 }

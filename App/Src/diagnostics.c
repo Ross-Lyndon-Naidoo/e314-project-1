@@ -88,6 +88,7 @@ void Diagnostics_Process(void) {
   }
 }
 
+// TODO: Move transmiting functions to a separate UART utility file
 void Diagnostics_TransmitData(const char *data) {
   // Check the specific TX state so background RX (like GPS) doesn't block this
   if (!tx_busy) {
@@ -136,7 +137,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 static void cmd_stat(const char *payload) {
   (void)payload;
 
-  const TelemetryData_t telemetry = Telemetry_GetSensorData();
+  const TelemetryData_t telemetry = Telemetry_GetData();
   const timestamp_t time = System_GetCurrentTime();
 
   char response[256];
